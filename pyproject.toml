@@ -14,6 +14,7 @@ psycopg2-binary = "^2.9.9"
 psycopg2 = "^2.9.9"
 geoalchemy2 = "^0.15.2"
 alembic = "^1.13.2"
+bcrypt = "^4.2.0"
 
 
 [build-system]
