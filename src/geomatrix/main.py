@@ -3,6 +3,7 @@ from .config import DatabaseSettings
 from sqlalchemy.orm import Session
 from geomatrix.database.core import get_db
 
+
 app = FastAPI(
     title="GeoMatrix",
     description="A geospatial data analysis tool"
