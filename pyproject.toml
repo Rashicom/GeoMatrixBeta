@@ -14,7 +14,9 @@ psycopg2-binary = "^2.9.9"
 psycopg2 = "^2.9.9"
 geoalchemy2 = "^0.15.2"
 alembic = "^1.13.2"
-bcrypt = "^4.2.0"
+pyjwt = "^2.9.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+bcrypt = "4.0.1"
 
 
 [build-system]

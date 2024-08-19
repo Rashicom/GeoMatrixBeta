@@ -1,15 +1,13 @@
-from fastapi import FastAPI, Depends
-from .config import DatabaseSettings
-from sqlalchemy.orm import Session
-from geomatrix.database.core import get_db
-
+from fastapi import FastAPI
+from geomatrix.api import api_router
 
 app = FastAPI(
     title="GeoMatrix",
     description="A geospatial data analysis tool"
     )
 
+app.include_router(api_router, prefix="/api/v1")
 
-@app.get("/api/hello")
-async def test_api(db:Session=Depends(get_db)):
-    return {"message": "Hello, i'm Geomatrix!"}
+@app.get('/')
+def get_default_resp():
+    return {"message": "Welcome to GeoMatrix!"}
