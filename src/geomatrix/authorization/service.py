@@ -1,8 +1,9 @@
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
-from geomatrix.authorization.schemas import CreateUserRequestModel
+from geomatrix.authorization.schemas import CreateUserRequestModel, LoginRequestModel
 from geomatrix.authorization.crud import create_user, get_user_by_email
 from geomatrix.authorization.enums import RoleEnums
+
 
 def register_geomatrix_user(db: Session, user_model:CreateUserRequestModel):
     """
@@ -29,4 +30,22 @@ def register_geomatrix_user(db: Session, user_model:CreateUserRequestModel):
         print(e)
         db.rollback()
         return None
-        
+
+
+def is_authenticated(db:Session, user_model:LoginRequestModel):
+    """
+    Authenticate user using the email and password
+    retrun user if authenticated, else return None
+    """
+    user = get_user_by_email(db, user_model.email)
+    if user:
+        if user.check_password(user_model.password):
+            if user.is_active:
+                return user
+            else:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User is in inactive state, contact us")
+        else:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
+    else:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalied user")
+    

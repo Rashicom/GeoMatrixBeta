@@ -15,10 +15,12 @@ class JWTSettings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # load envs from .env
-    model_config = SettingsConfigDict(env_file=".env")
 
 # get db settings from cache if available else load
 @lru_cache
 def get_db_settings():
     return DatabaseSettings()
+
+
+def get_jwt_settings():
+    return JWTSettings()

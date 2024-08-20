@@ -1,18 +1,13 @@
-from geomatrix.database.core import Base
-from geomatrix.models import TimeStampMixin
-
 from sqlalchemy import Column, String, Enum, Boolean
 from sqlalchemy.dialects.postgresql import UUID
-
 import uuid
-from geomatrix.authorization.enums import RoleEnums
-import bcrypt
 from passlib.context import CryptContext
 
-from geomatrix.authorization.auth import hash_password
+from geomatrix.database.core import Base
+from geomatrix.models import TimeStampMixin
+from geomatrix.authorization.enums import RoleEnums
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 
 # All authorization tables
@@ -28,7 +23,7 @@ class User(Base, TimeStampMixin):
 
     def set_password(self, password: str) -> None:
         """Sets the password for the user."""
-        self.password = hash_password(password)
+        self.password = pwd_context.hash(password)
 
     def check_password(self, password: str) -> bool:
         """Checks if the provided password matches the stored password."""
