@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordRequestForm
 
 from geomatrix.database.core import get_db
 from geomatrix.authorization.service import register_geomatrix_user, is_authenticated
-from geomatrix.authorization.auth import create_access_token
-from geomatrix.authorization.schemas import CreateUserRequestModel, CreateUserResponseModel, LoginRequestModel, LoginResponsetModel
+from geomatrix.authorization.auth import CurrentUser,create_access_token
+from geomatrix.authorization.schemas import CreateUserRequestModel, CreateUserResponseModel, LoginRequestModel, LoginResponsetModel, UserModel
 
 router = APIRouter()
 
@@ -21,7 +22,7 @@ def sign_up(user_request_model: CreateUserRequestModel, db: Session=Depends(get_
 
 
 @router.post("/login", response_model=LoginResponsetModel)
-def login(login_model:LoginRequestModel, db: Session=Depends(get_db)):
+def login(login_model:OAuth2PasswordRequestForm=Depends(), db: Session=Depends(get_db)):
     """
     Returns jwt token for authenticated users
     """
@@ -29,4 +30,10 @@ def login(login_model:LoginRequestModel, db: Session=Depends(get_db)):
 
     # generate jwt token
     jwt_token =  create_access_token(user)
-    return {"acess_token":jwt_token}
+    return {"access_token":jwt_token}
+
+
+@router.get("/protected")
+def protedted(user:CurrentUser):
+    print("Logined user",user.email)
+    return {"status":"protected resources"}

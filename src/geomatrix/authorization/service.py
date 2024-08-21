@@ -1,5 +1,7 @@
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordRequestForm
+
 from geomatrix.authorization.schemas import CreateUserRequestModel, LoginRequestModel
 from geomatrix.authorization.crud import create_user, get_user_by_email
 from geomatrix.authorization.enums import RoleEnums
@@ -32,14 +34,14 @@ def register_geomatrix_user(db: Session, user_model:CreateUserRequestModel):
         return None
 
 
-def is_authenticated(db:Session, user_model:LoginRequestModel):
+def is_authenticated(db:Session, login_form:OAuth2PasswordRequestForm):
     """
     Authenticate user using the email and password
     retrun user if authenticated, else return None
     """
-    user = get_user_by_email(db, user_model.email)
+    user = get_user_by_email(db, login_form.username)
     if user:
-        if user.check_password(user_model.password):
+        if user.check_password(login_form.password):
             if user.is_active:
                 return user
             else:
