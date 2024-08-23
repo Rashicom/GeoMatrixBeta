@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from geomatrix.config import get_db_settings
+from geomatrix.config import get_settings
 
-db_settings = get_db_settings()
+settings = get_settings()
 
 # establishing connection to database server
 engine = create_engine(
-    url=db_settings.db_url,
-    pool_size=db_settings.pool_size,
+    url=settings.db_url,
+    pool_size=settings.pool_size,
     echo=True,  # print SQL queries to console for debugging
 )
 

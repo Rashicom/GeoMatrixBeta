@@ -17,6 +17,8 @@ alembic = "^1.13.2"
 pyjwt = "^2.9.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 bcrypt = "4.0.1"
+fastapi-mail = "^1.4.1"
+gunicorn = "^23.0.0"
 
 
 [build-system]

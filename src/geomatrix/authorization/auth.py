@@ -8,16 +8,16 @@ from sqlalchemy.orm import Session
 
 from geomatrix.authorization.models import User
 from geomatrix.authorization.schemas import UserModel
-from geomatrix.config import get_jwt_settings
+from geomatrix.config import get_settings
 from geomatrix.database.core import get_db
 from geomatrix.authorization.crud import get_user_by_uuid
 
-jwt_settings = get_jwt_settings()
+settings = get_settings()
 
 def create_access_token(user_model:User):
-    secret_key=jwt_settings.SECRET_KEY
-    algorithm=jwt_settings.ALGORITHM
-    expires_delta=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    secret_key=settings.SECRET_KEY
+    algorithm=settings.ALGORITHM
+    expires_delta=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     
     to_encode = {
         "sub": str(user_model.uuid)
@@ -38,8 +38,8 @@ def get_current_user(token:str=Depends(auth2_schema), db:Session=Depends(get_db)
     try:
         payload = jwt.decode(
             token,
-            jwt_settings.SECRET_KEY,
-            algorithms=[jwt_settings.ALGORITHM]
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
         )
         print(payload)
     except Exception as e:

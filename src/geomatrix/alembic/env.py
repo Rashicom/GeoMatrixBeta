@@ -5,15 +5,15 @@ from sqlalchemy import pool
 
 from alembic import context
 from geomatrix.database.core import Base
-from geomatrix.config import get_db_settings
-db_settings = get_db_settings()
+from geomatrix.config import get_settings
+settings = get_settings()
 
 from geomatrix.authorization.models import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", db_settings.db_url)
+config.set_main_option("sqlalchemy.url", settings.db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

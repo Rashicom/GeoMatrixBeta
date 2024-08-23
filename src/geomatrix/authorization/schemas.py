@@ -1,14 +1,13 @@
 from pydantic import BaseModel
 from uuid import UUID
 from geomatrix.authorization.enums import RoleEnums
-from typing import Literal
 
 class UserModel(BaseModel):
     uuid: UUID
     name: str
     email: str
     password: str
-    role: Literal["government","government_agencies","public"]
+    role: RoleEnums
     is_active: bool
 
 class CreateUserRequestModel(BaseModel):
