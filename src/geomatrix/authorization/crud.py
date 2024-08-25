@@ -26,3 +26,10 @@ def get_user_by_uuid(db:Session, pk:uuid):
 
 def get_user_by_email(db:Session, email: str):
     return db.query(User).filter(User.email == email).first()
+
+def activate_user(db:Session, email: str):
+    user = db.query(User).filter(User.email == email).first()
+    user.is_active = True
+    db.commit()
+    db.refresh(user)
+    return user

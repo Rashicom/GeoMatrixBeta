@@ -1,6 +1,7 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from geomatrix.config import get_settings
 from typing import List
+from geomatrix.common.schemas import HtmlEmailSchema, TextEmailSchema
 settings = get_settings()
 
 conf = ConnectionConfig(
@@ -12,38 +13,39 @@ conf = ConnectionConfig(
     MAIL_STARTTLS = False,
     MAIL_SSL_TLS = True,
     USE_CREDENTIALS = True,
-    VALIDATE_CERTS = True
+    VALIDATE_CERTS = True,
+    TEMPLATE_FOLDER = "src/geomatrix/templates",
 )
 
-async def send_template_mail(targets:List, data:dict, template:str=None):
+async def send_template_mail(email_schema:HtmlEmailSchema):
     """
     Accept : target[] emails and : template optional
     """
     try:
         mailer = FastMail(conf)
         message = MessageSchema(
-            subject="GeoMatrix - New User Registration",
-            recipients=targets,
-            body="html",
-            subtype="MessageType.html",
+            subject=email_schema.subject,
+            recipients=email_schema.recipients,
+            template_body=email_schema.template_body,
+            subtype="html",
         )
-        await mailer.send_message(message)
+        await mailer.send_message(message, template_name="varify_account.html")
     except Exception as e:
         print(f"Error sending email: {e}")
         return False
     return True
 
 
-async def send_mail(targets:List, template:str=None):
+async def send_mail(email_schema:TextEmailSchema):
     """
     Accept : target[] emails and : template optional
     """
     try:
         mailer = FastMail(conf)
         message = MessageSchema(
-            subject="GeoMatrix - New User Registration",
-            recipients=targets,
-            body="Test message",
+            subject=email_schema.subject,
+            recipients=email_schema.recipients,
+            body=email_schema.body,
             subtype="plain",
         )
         await mailer.send_message(message)
