@@ -8,7 +8,7 @@ from geomatrix.database.core import Base
 from geomatrix.config import get_settings
 settings = get_settings()
 
-from geomatrix.authorization.models import User
+from geomatrix.authorization.models import User, APIKeys
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
