@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.staticfiles import StaticFiles
 from geomatrix.api import api_router
 from geomatrix.common.email import send_mail, send_template_mail
 
@@ -8,8 +9,11 @@ app = FastAPI(
     description="A geospatial data analysis tool"
     )
 
-app.include_router(api_router, prefix="/api/v1")
+# mound static directory
+app.mount("/static",StaticFiles(directory="static"),name="static")
 
+# add routes
+app.include_router(api_router, prefix="/api/v1")
 
 
 @app.post('/sent')
