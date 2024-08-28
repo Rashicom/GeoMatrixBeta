@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     MAIL_PORT: int
     MAIL_SERVER: str
 
+    MAX_API_KEYS: int = 3
+
     BASE_URL: str = "http://127.0.0.1:8000/api/v1"
 
     # load envs from .env

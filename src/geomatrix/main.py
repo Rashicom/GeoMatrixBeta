@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from geomatrix.api import api_router
-from geomatrix.common.email import send_mail, send_template_mail
+from geomatrix.common.email import send_template_mail
 
 
 app = FastAPI(

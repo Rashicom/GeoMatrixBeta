@@ -1,9 +1,10 @@
 from fastapi import status, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
+import uuid
 
 from geomatrix.authorization.schemas import CreateUserRequestModel, LoginRequestModel
-from geomatrix.authorization.crud import create_user, get_user_by_email, activate_user
+from geomatrix.authorization.crud import create_user, get_user_by_email, activate_user, get_api_keys_count, create_api_key, get_api_keys, remove_api_key
 from geomatrix.authorization.enums import RoleEnums
 from geomatrix.common.email import send_template_mail
 from geomatrix.common.schemas import HtmlEmailSchema
@@ -81,3 +82,38 @@ def varify_email_by_token(db:Session,token:str):
         return user
     else:
         return None
+    
+
+def generate_api_key(db:Session,user_id:uuid):
+    """
+    Generate unique API key for authenticated user
+    A user can only can have perticular number of api keys
+    """
+    # ensure the user cannot have more than limit api keys
+    api_key_count = get_api_keys_count(db, user_id)
+    if api_key_count >= settings.MAX_API_KEYS:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User has reached the limit of API keys")
+    
+    try:
+        new_api_key =  create_api_key(db, user_id)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Cant create API Key")
+    return new_api_key
+
+
+def get_users_apikeys(db:Session, user_id:uuid):
+    """
+    Fetch all api keys of a user
+    """
+    api_keys = get_api_keys(db,user_id)
+    return api_keys
+
+def delete_api_key(db, api_key_id):
+    """
+    Delete a specific api key
+    """
+    try:
+        remove_api_key(db, api_key_id)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="API Key Not Found")
+    

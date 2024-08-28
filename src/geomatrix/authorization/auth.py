@@ -20,7 +20,7 @@ def create_access_token(user_model:User):
     expires_delta=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     
     to_encode = {
-        "sub": str(user_model.uuid)
+        "sub": str(user_model.id)
     }
     if expires_delta:
         expire = datetime.now() + timedelta(minutes=expires_delta)

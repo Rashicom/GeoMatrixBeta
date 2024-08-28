@@ -3,7 +3,7 @@ from uuid import UUID
 from geomatrix.authorization.enums import RoleEnums
 
 class UserModel(BaseModel):
-    uuid: UUID
+    id: UUID
     name: str
     email: str
     password: str
@@ -17,7 +17,7 @@ class CreateUserRequestModel(BaseModel):
     role: RoleEnums
 
 class CreateUserResponseModel(BaseModel):
-    uuid: UUID
+    id: UUID
     name: str
     email: str
     role: RoleEnums
@@ -29,3 +29,7 @@ class LoginRequestModel(BaseModel):
 
 class LoginResponsetModel(BaseModel):
     access_token: str
+
+class ApiKeyResponseSchema(BaseModel):
+    id: UUID
+    api_key: UUID

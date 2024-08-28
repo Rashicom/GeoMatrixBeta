@@ -15,7 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class User(Base, TimeStampMixin):
     __tablename__ = 'users'
 
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
@@ -40,9 +40,9 @@ class APIKeys(Base, TimeStampMixin):
     """
     __tablename__ = 'api_keys'
 
-    uuid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.uuid', ondelete='CASCADE'), nullable=False)
-    api_key = Column(String, nullable=False, unique=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    api_key = Column(UUID(as_uuid=True), default=uuid.uuid4, nullable=False, unique=True)
 
     # relation with user table
     user = relationship("User", back_populates="api_key_set")
