@@ -1,9 +1,12 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
+
 from geomatrix.authorization.schemas import CreateUserRequestModel
 from geomatrix.authorization.models import User, APIKeys
 import uuid
 
-def create_user(db:Session, user_model:CreateUserRequestModel, **kwargs) -> User:
+async def create_user(db:AsyncSession, user_model:CreateUserRequestModel, **kwargs) -> User:
     """
     For creating a new user
     kwargs can pass while user creation for override values
@@ -16,32 +19,47 @@ def create_user(db:Session, user_model:CreateUserRequestModel, **kwargs) -> User
 
     # save user
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
 
+    try:
+        await db.commit()
+        await db.refresh(new_user)
+        return new_user
+    except Exception as e:
+        await db.rollback()
+        raise e
 
-def get_user_by_uuid(db:Session, pk:uuid):
-    return db.query(User).filter(User.id == pk).first()
+async def get_user_by_uuid(db:Session, pk:uuid):
+    result = await db.execute(select(User).filter(User.id == pk))
+    return result.scalars().first()
 
-def get_user_by_email(db:Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+async def get_user_by_email(db:Session, email: str):
+    result = await db.execute(select(User).filter(User.email == email))
+    return result.scalars().first()
 
-def activate_user(db:Session, email: str):
-    user = db.query(User).filter(User.email == email).first()
+async def activate_user(db:Session, email: str):
+    result = await db.execute(select(User).filter(User.email == email))
+    user = result.scalars().first()
     user.is_active = True
-    db.commit()
-    db.refresh(user)
-    return user
 
-def get_api_keys(db:Session, user_id:uuid):
-    return db.query(APIKeys).filter(APIKeys.user_id == user_id).all()
+    try:
+        await db.commit()
+        await db.refresh(user)
+        return user
+    except Exception as e:
+        await db.rollback()
+        raise e
 
 
-def get_api_keys_count(db:Session, user_id:uuid) -> int:
-    return db.query(APIKeys).filter(APIKeys.user_id == user_id).count()
+async def get_api_keys(db:Session, user_id:uuid):
+    result = await db.execute(select(APIKeys).filter(APIKeys.user_id == user_id))
+    return result.scalars().all()
 
-def create_api_key(db:Session, user_id:uuid):
+
+async def get_api_keys_count(db:Session, user_id:uuid) -> int:
+    result = await db.execute(select(func.count()).where(APIKeys.user_id == user_id))
+    return result.scalar_one()
+
+async def create_api_key(db:Session, user_id:uuid):
     """
     Create a api key table row, key is defaultly generated
     set primery key as user_uuid
@@ -50,20 +68,23 @@ def create_api_key(db:Session, user_id:uuid):
     db.add(new_api_key)
 
     try:
-        db.commit()
-        db.refresh(new_api_key)
+        await db.commit()
+        await db.refresh(new_api_key)
         return new_api_key
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         raise e
-    
-def remove_api_key(db, api_key_id):
-    api_key = db.query(APIKeys).filter(APIKeys.id == api_key_id).first()
+
+
+async def remove_api_key(db:AsyncSession, api_key_id):
+    result = await db.execute(select(APIKeys).filter(APIKeys.id == api_key_id))
+    api_key = result.scalars().first()
     if not api_key:
         raise Exception("API key not found")
-    db.delete(api_key)
+    await db.delete(api_key)
+    
     try:
-        db.commit()
+        await db.commit()
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         raise e

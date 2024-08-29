@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     db_url: str = "sqlite:///geomatrix_db.db" #default database set to sqlite
+    ASYNC_DB_URL: str
     pool_size: int = 10
 
     SECRET_KEY: str

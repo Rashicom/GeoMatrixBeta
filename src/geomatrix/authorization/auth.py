@@ -5,11 +5,12 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from geomatrix.authorization.models import User
 from geomatrix.authorization.schemas import UserModel
 from geomatrix.config import get_settings
-from geomatrix.database.core import get_db
+from geomatrix.database.core import async_db
 from geomatrix.authorization.crud import get_user_by_uuid
 
 settings = get_settings()
@@ -34,14 +35,13 @@ def create_access_token(user_model:User):
 
 
 auth2_schema = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
-def get_current_user(token:str=Depends(auth2_schema), db:Session=Depends(get_db)):
+async def get_current_user(db:async_db,token:str=Depends(auth2_schema)):
     try:
         payload = jwt.decode(
             token,
             settings.SECRET_KEY,
             algorithms=[settings.ALGORITHM]
         )
-        print(payload)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate credentials")
@@ -53,7 +53,7 @@ def get_current_user(token:str=Depends(auth2_schema), db:Session=Depends(get_db)
     # find the user and return if found and active else rise user not found exception
     
     user_pk = payload.get("sub")
-    user = get_user_by_uuid(db, pk=user_pk)
+    user = await get_user_by_uuid(db, pk=user_pk)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
