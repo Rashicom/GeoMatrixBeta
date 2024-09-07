@@ -5,3 +5,4 @@ class RoleEnums(GeoMatrixEnum):
     GOVERNMENT_AGENCIES = "government_agencies"
     PUBLIC = "public"
 
+

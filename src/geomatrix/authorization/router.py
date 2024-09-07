@@ -72,8 +72,3 @@ async def delete_apikey(api_key_id,user:CurrentUser, db:async_db):
     """
     await delete_api_key(db,api_key_id)
     return
-
-@router.get("/protected")
-async def protedted(user:CurrentUser):
-    print("Logined user",user.email)
-    return {"status":"protected resources"}

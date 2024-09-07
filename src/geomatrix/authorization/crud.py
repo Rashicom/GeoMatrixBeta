@@ -5,6 +5,7 @@ from sqlalchemy import select, func
 from geomatrix.authorization.schemas import CreateUserRequestModel
 from geomatrix.authorization.models import User, APIKeys
 import uuid
+from uuid import UUID
 
 async def create_user(db:AsyncSession, user_model:CreateUserRequestModel, **kwargs) -> User:
     """
@@ -88,3 +89,11 @@ async def remove_api_key(db:AsyncSession, api_key_id):
     except Exception as e:
         await db.rollback()
         raise e
+
+
+# get user by apikey
+async def get_user_by_api_key(db:AsyncSession, api_key: str):
+    result = await db.execute(select(User).join(APIKeys).where(APIKeys.api_key == api_key))
+    return result.scalars().first()
+    
+    
