@@ -27,3 +27,4 @@ async def validate_apikey(request:Request ,db: async_db, api_key: str = Depends(
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
     request.scope["user"] = user
+    

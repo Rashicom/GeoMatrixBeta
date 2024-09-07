@@ -21,7 +21,7 @@ class CadastralRepository(Base, TimeStampMixin):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     
     # land unique id for each cadastral
-    cadastral_unique_id = Column(String,nullable=False)
+    cadastral_unique_id = Column(String, nullable=False, unique=True)
 
     # land info
     boundary_polygon = Column(Geometry('POLYGON',srid=4326), nullable=False)
@@ -39,6 +39,9 @@ class CadastralRepository(Base, TimeStampMixin):
     # this dates is verry crucial for geberating land time snamshorts
     active_from = Column(Date, nullable=False)
     active_till = Column(Date, nullable=True)
+
+    # created_by
+    created_by = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
     # relationships
     parent_land_set = relationship("CadastralRegistery",foreign_keys="CadastralRegistery.child_land_id", back_populates="child_land")
