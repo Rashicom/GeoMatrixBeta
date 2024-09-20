@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  geomatrix:
+    build: .
+    command: bash -c "fastapi run src/geomatrix/main.py --port 8001"
+    volumes:
+      - .:/code
+    env_file:
+      - .env
+    
