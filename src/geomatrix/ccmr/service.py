@@ -1,5 +1,6 @@
 from geomatrix.ccmr.schemas import RequestCreateCadastreSchema
 import geopandas as gpd
+from geomatrix.ccmr.landregistration import LandRegistrar
 
 def validate_cadastre(cadastre_schema: RequestCreateCadastreSchema):
     """
@@ -8,6 +9,6 @@ def validate_cadastre(cadastre_schema: RequestCreateCadastreSchema):
         - Cadastre corditates validation
         - Cadastre overlaping validation (one cadastre must not overlap other cadastre)
     """
-    # primary validation
-    poligon_list = cadastre_schema.boundary_polygon
+    land_registrar = LandRegistrar(cadastre_schema, is_bulk=False)
+    
 
